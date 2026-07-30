@@ -1,10 +1,13 @@
 package com.mateo.customer_service.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public record CustomerRequestDTO(
-        String nombre,
-        String apellido,
-        String documento,
-        String direccion,
-        String email
+        @NotBlank String nombre,
+        @NotBlank String apellido,
+        @NotBlank String documento,
+        @NotBlank String direccion,
+        @NotBlank @Email String email
 ) {
 }

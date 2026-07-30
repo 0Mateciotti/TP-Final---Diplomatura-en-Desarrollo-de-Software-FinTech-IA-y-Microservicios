@@ -2,7 +2,9 @@ package com.mateo.product_service.cuenta;
 
 import com.mateo.product_service.dto.CuentaRequestDTO;
 import com.mateo.product_service.dto.CuentaResponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,15 +35,16 @@ public class CuentaController {
         return cuentaService.getCuentasByClienteId(clienteId);
     }
     @PostMapping
-    public CuentaResponseDTO createCuenta(@RequestBody CuentaRequestDTO cuentaRequestDTO) {
+    public CuentaResponseDTO createCuenta(@Valid @RequestBody CuentaRequestDTO cuentaRequestDTO) {
         return cuentaService.addCuenta(cuentaRequestDTO);
     }
     @PutMapping("/{id}")
-    public CuentaResponseDTO updateCuenta(@PathVariable Long id, @RequestBody CuentaRequestDTO cuentaRequestDTO) {
+    public CuentaResponseDTO updateCuenta(@PathVariable Long id, @Valid @RequestBody CuentaRequestDTO cuentaRequestDTO) {
         return cuentaService.updateCuenta(id, cuentaRequestDTO);
     }
     @DeleteMapping("/{id}")
-    public void deleteCuenta(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCuenta(@PathVariable Long id) {
         cuentaService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -2,7 +2,9 @@ package com.mateo.product_service.tarjeta;
 
 import com.mateo.product_service.dto.TarjetaRequestDTO;
 import com.mateo.product_service.dto.TarjetaResponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,15 +35,16 @@ public class TarjetaController {
         return tarjetaService.getTarjetasByClienteId(clienteId);
     }
     @PostMapping
-    public TarjetaResponseDTO createTarjeta(@RequestBody TarjetaRequestDTO tarjetaRequestDTO) {
+    public TarjetaResponseDTO createTarjeta(@Valid @RequestBody TarjetaRequestDTO tarjetaRequestDTO) {
         return tarjetaService.addTarjeta(tarjetaRequestDTO);
     }
     @PutMapping("/{id}")
-    public TarjetaResponseDTO updateTarjeta(@PathVariable Long id, @RequestBody TarjetaRequestDTO tarjetaRequestDTO) {
+    public TarjetaResponseDTO updateTarjeta(@PathVariable Long id, @Valid @RequestBody TarjetaRequestDTO tarjetaRequestDTO) {
         return tarjetaService.updateTarjeta(id, tarjetaRequestDTO);
     }
     @DeleteMapping("/{id}")
-    public void deleteTarjeta(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTarjeta(@PathVariable Long id) {
         tarjetaService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

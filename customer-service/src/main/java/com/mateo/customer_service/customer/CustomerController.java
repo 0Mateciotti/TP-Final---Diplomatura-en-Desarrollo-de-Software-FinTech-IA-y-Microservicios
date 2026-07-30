@@ -3,7 +3,9 @@ package com.mateo.customer_service.customer;
 import com.mateo.customer_service.dto.CustomerProfileDTO;
 import com.mateo.customer_service.dto.CustomerRequestDTO;
 import com.mateo.customer_service.dto.CustomerResponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,20 +32,20 @@ public class CustomerController {
         return customerService.getCustomerById(id);
     }
     @PostMapping
-    public CustomerResponseDTO createCustomer(@RequestBody CustomerRequestDTO customerRequestDTO) {
+    public CustomerResponseDTO createCustomer(@Valid @RequestBody CustomerRequestDTO customerRequestDTO) {
         return customerService.addCustomer(customerRequestDTO);
     }
     @PutMapping("/{id}")
-    public CustomerResponseDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerRequestDTO customerRequestDTO) {
+    public CustomerResponseDTO updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerRequestDTO customerRequestDTO) {
         return customerService.updateCustomer(id, customerRequestDTO);
     }
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
     @GetMapping("/{id}/products")
     public CustomerProfileDTO getCustomerProfile(@PathVariable Long id) {
         return customerService.getCustomerProfile(id);
     }
 }
-

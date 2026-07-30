@@ -135,3 +135,17 @@ En `postman/` hay una colección (`TP-Final-FinTech.postman_collection.json`) y 
 ├── customer-service/     # Customer + Feign Client hacia product-service
 └── postman/             # Colección y environment para pruebas manuales
 ```
+
+## Revisión de código con IA
+
+Como parte del proceso de desarrollo, la IA Claude analizó y sugirió estos cambios que fueron luego aplicados en el proyecto:
+
+> Hice de revisor: leí todo el código fuente de los 4 proyectos (controllers, services, repos, mappers, entidades, DTOs, excepciones, poms, yaml). Como ya lo probé funcionando de punta a punta antes, no encontré bugs funcionales — el review es sobre diseño/buenas prácticas. Esto es lo que encontré:
+>
+> **Hallazgos**
+>
+> 1. Sin Bean Validation en los DTOs de request — hoy nada impide un `POST /customers` con `nombre` vacío o un `/cuentas` con `saldo` negativo. Es fácil de agregar (`spring-boot-starter-validation` + `@NotBlank`/`@NotNull`/`@PositiveOrZero` en los records + `@Valid` en los controllers) y suma directo al criterio de "diseño y buenas prácticas". Recomiendo aplicarlo.
+> 2. Los `DELETE` devuelven 200 en vez de 204 — lo confirmé en la prueba end-to-end (`HTTP/1.1 200, Content-Length: 0`). Semánticamente un delete exitoso sin body debería ser `204 No Content`. Cambio chico y de bajo riesgo (`ResponseEntity.noContent().build()` en los 4 controllers). Recomiendo aplicarlo.
+> 3. `@Autowired` por campo en vez de inyección por constructor — lo detecté en todos los services/controllers. Técnicamente no es "lo más moderno" en Spring, pero fue una decisión explícita para calzar con el estilo de `TarjetasApi` que ya charlamos. No lo tocaría salvo que quieras que sí.
+
+Los puntos 1 y 2 se aplicaron: se agregó `spring-boot-starter-validation` con anotaciones (`@NotBlank`, `@NotNull`, `@Positive`, `@PositiveOrZero`, `@Email`) en todos los DTOs de request, `@Valid` en los endpoints POST/PUT, un handler de `MethodArgumentNotValidException` en los `GlobalExceptionHandler` (devuelve 400 con el detalle de los campos inválidos), y los `DELETE` ahora devuelven `204 No Content`. El punto 3 se dejó como está, por ser una decisión de estilo ya tomada a propósito.

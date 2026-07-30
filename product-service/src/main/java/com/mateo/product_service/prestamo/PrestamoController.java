@@ -2,7 +2,9 @@ package com.mateo.product_service.prestamo;
 
 import com.mateo.product_service.dto.PrestamoRequestDTO;
 import com.mateo.product_service.dto.PrestamoResponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,15 +35,16 @@ public class PrestamoController {
         return prestamoService.getPrestamosByClienteId(clienteId);
     }
     @PostMapping
-    public PrestamoResponseDTO createPrestamo(@RequestBody PrestamoRequestDTO prestamoRequestDTO) {
+    public PrestamoResponseDTO createPrestamo(@Valid @RequestBody PrestamoRequestDTO prestamoRequestDTO) {
         return prestamoService.addPrestamo(prestamoRequestDTO);
     }
     @PutMapping("/{id}")
-    public PrestamoResponseDTO updatePrestamo(@PathVariable Long id, @RequestBody PrestamoRequestDTO prestamoRequestDTO) {
+    public PrestamoResponseDTO updatePrestamo(@PathVariable Long id, @Valid @RequestBody PrestamoRequestDTO prestamoRequestDTO) {
         return prestamoService.updatePrestamo(id, prestamoRequestDTO);
     }
     @DeleteMapping("/{id}")
-    public void deletePrestamo(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePrestamo(@PathVariable Long id) {
         prestamoService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
