@@ -8,6 +8,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/0Mateciotti/TpFinalDiplomatura.git
+          uri: https://github.com/0Mateciotti/TP-Final---Diplomatura-en-Desarrollo-de-Software-FinTech-IA-y-Microservicios.git
           default-label: master
           search-paths: config-repo
+  
