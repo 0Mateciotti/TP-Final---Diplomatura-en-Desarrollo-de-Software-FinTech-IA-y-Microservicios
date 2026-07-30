@@ -1,0 +1,427 @@
+{
+	"info": {
+		"_postman_id": "d4f1a2b3-c4d5-4e6f-8a9b-tpfinalfintech",
+		"name": "TP Final FinTech - customer-service / product-service",
+		"description": "Coleccion para probar de punta a punta customer-service (8081) y product-service (8082) con el modelo de 3 entidades (Cuenta/PrestamoPersonal/TarjetaCredito). Correr en orden (de arriba hacia abajo) o con Collection Runner: cada request que crea un recurso guarda su id en variables de entorno para que los siguientes requests lo usen automaticamente.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Infraestructura",
+			"item": [
+				{
+					"name": "Eureka - dashboard responde",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{eureka_url}}", "host": ["{{eureka_url}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Eureka - apps registradas (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [ { "key": "Accept", "value": "application/json" } ],
+						"url": { "raw": "{{eureka_url}}/eureka/apps", "host": ["{{eureka_url}}"], "path": ["eureka", "apps"] }
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Customer Service",
+			"item": [
+				{
+					"name": "Crear cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"201 o 200\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"customerId\", jsonData.id);",
+									"console.log(\"customerId guardado:\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Perez\",\n  \"documento\": \"30111222\",\n  \"direccion\": \"Av. Siempre Viva 742\",\n  \"email\": \"juan.perez@mail.com\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{customer_url}}/customers", "host": ["{{customer_url}}"], "path": ["customers"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Listar clientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{customer_url}}/customers", "host": ["{{customer_url}}"], "path": ["customers"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener cliente por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{customer_url}}/customers/{{customerId}}", "host": ["{{customer_url}}"], "path": ["customers", "{{customerId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar cliente",
+					"request": {
+						"method": "PUT",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Perez\",\n  \"documento\": \"30111222\",\n  \"direccion\": \"Av. Siempre Viva 999\",\n  \"email\": \"juan.perez@mail.com\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{customer_url}}/customers/{{customerId}}", "host": ["{{customer_url}}"], "path": ["customers", "{{customerId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Cliente inexistente (404 esperado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{customer_url}}/customers/999999", "host": ["{{customer_url}}"], "path": ["customers", "999999"] }
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Product Service - Cuentas",
+			"item": [
+				{
+					"name": "Crear cuenta corriente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"201 o 200\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"cuentaId\", jsonData.id);",
+									"console.log(\"cuentaId guardado:\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": {{customerId}},\n  \"tipoCuenta\": \"CUENTA_CORRIENTE\",\n  \"saldo\": 150000.00,\n  \"activo\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{product_url}}/cuentas", "host": ["{{product_url}}"], "path": ["cuentas"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Listar cuentas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/cuentas", "host": ["{{product_url}}"], "path": ["cuentas"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener cuenta por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/cuentas/{{cuentaId}}", "host": ["{{product_url}}"], "path": ["cuentas", "{{cuentaId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Cuentas por cliente (usado luego por Feign)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/cuentas/cliente/{{customerId}}", "host": ["{{product_url}}"], "path": ["cuentas", "cliente", "{{customerId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar cuenta",
+					"request": {
+						"method": "PUT",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": {{customerId}},\n  \"tipoCuenta\": \"CUENTA_CORRIENTE\",\n  \"saldo\": 200000.00,\n  \"activo\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{product_url}}/cuentas/{{cuentaId}}", "host": ["{{product_url}}"], "path": ["cuentas", "{{cuentaId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Cuenta inexistente (404 esperado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/cuentas/999999", "host": ["{{product_url}}"], "path": ["cuentas", "999999"] }
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Product Service - Prestamos",
+			"item": [
+				{
+					"name": "Crear prestamo personal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"201 o 200\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"prestamoId\", jsonData.id);",
+									"console.log(\"prestamoId guardado:\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": {{customerId}},\n  \"montoPrestamo\": 500000.00,\n  \"tasaInteres\": 45.5,\n  \"cantidadCuotas\": 12,\n  \"activo\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{product_url}}/prestamos", "host": ["{{product_url}}"], "path": ["prestamos"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Listar prestamos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/prestamos", "host": ["{{product_url}}"], "path": ["prestamos"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener prestamo por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/prestamos/{{prestamoId}}", "host": ["{{product_url}}"], "path": ["prestamos", "{{prestamoId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Prestamos por cliente (usado luego por Feign)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/prestamos/cliente/{{customerId}}", "host": ["{{product_url}}"], "path": ["prestamos", "cliente", "{{customerId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar prestamo",
+					"request": {
+						"method": "PUT",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": {{customerId}},\n  \"montoPrestamo\": 500000.00,\n  \"tasaInteres\": 40.0,\n  \"cantidadCuotas\": 18,\n  \"activo\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{product_url}}/prestamos/{{prestamoId}}", "host": ["{{product_url}}"], "path": ["prestamos", "{{prestamoId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Prestamo inexistente (404 esperado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/prestamos/999999", "host": ["{{product_url}}"], "path": ["prestamos", "999999"] }
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Product Service - Tarjetas",
+			"item": [
+				{
+					"name": "Crear tarjeta de credito",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"201 o 200\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"tarjetaId\", jsonData.id);",
+									"console.log(\"tarjetaId guardado:\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": {{customerId}},\n  \"limite\": 300000.00,\n  \"activo\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{product_url}}/tarjetas", "host": ["{{product_url}}"], "path": ["tarjetas"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Listar tarjetas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/tarjetas", "host": ["{{product_url}}"], "path": ["tarjetas"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener tarjeta por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/tarjetas/{{tarjetaId}}", "host": ["{{product_url}}"], "path": ["tarjetas", "{{tarjetaId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Tarjetas por cliente (usado luego por Feign)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/tarjetas/cliente/{{customerId}}", "host": ["{{product_url}}"], "path": ["tarjetas", "cliente", "{{customerId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar tarjeta",
+					"request": {
+						"method": "PUT",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": {{customerId}},\n  \"limite\": 450000.00,\n  \"activo\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{product_url}}/tarjetas/{{tarjetaId}}", "host": ["{{product_url}}"], "path": ["tarjetas", "{{tarjetaId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Tarjeta inexistente (404 esperado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{product_url}}/tarjetas/999999", "host": ["{{product_url}}"], "path": ["tarjetas", "999999"] }
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Agregador (Feign)",
+			"item": [
+				{
+					"name": "Perfil del cliente (cliente + cuentas + prestamos + tarjetas)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"200 OK\", function () { pm.response.to.have.status(200); });",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"tiene cliente\", function () { pm.expect(jsonData.cliente).to.not.be.undefined; });",
+									"pm.test(\"tiene cuentas\", function () { pm.expect(jsonData.cuentas.length).to.be.above(0); });",
+									"pm.test(\"tiene prestamos\", function () { pm.expect(jsonData.prestamos.length).to.be.above(0); });",
+									"pm.test(\"tiene tarjetas\", function () { pm.expect(jsonData.tarjetas.length).to.be.above(0); });"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{customer_url}}/customers/{{customerId}}/products", "host": ["{{customer_url}}"], "path": ["customers", "{{customerId}}", "products"] }
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Cleanup (borrar todo lo creado)",
+			"item": [
+				{
+					"name": "Eliminar cuenta",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": { "raw": "{{product_url}}/cuentas/{{cuentaId}}", "host": ["{{product_url}}"], "path": ["cuentas", "{{cuentaId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar prestamo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": { "raw": "{{product_url}}/prestamos/{{prestamoId}}", "host": ["{{product_url}}"], "path": ["prestamos", "{{prestamoId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar tarjeta",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": { "raw": "{{product_url}}/tarjetas/{{tarjetaId}}", "host": ["{{product_url}}"], "path": ["tarjetas", "{{tarjetaId}}"] }
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar cliente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": { "raw": "{{customer_url}}/customers/{{customerId}}", "host": ["{{customer_url}}"], "path": ["customers", "{{customerId}}"] }
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
